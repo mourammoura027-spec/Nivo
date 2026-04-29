@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Nivora RP Store</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#000;
+color:#fff;
+}
+
+.bg{
+position:fixed;
+inset:0;
+background:url('https://i.imgur.com/8Z7X8ZL.jpeg') center/cover no-repeat;
+filter:brightness(.2);
+z-index:-1;
+}
+
+.container{max-width:1000px;margin:auto;padding:20px}
+
+.title{
+text-align:center;
+font-size:48px;
+font-weight:900;
+text-shadow:0 0 15px #ff00ff,0 0 20px #00ffff;
+}
+
+.box{
+background:rgba(255,255,255,.05);
+border:1px solid rgba(255,255,255,.1);
+border-radius:15px;
+padding:15px;
+margin-bottom:15px;
+backdrop-filter:blur(10px);
+}
+
+.btn{
+padding:10px;
+border-radius:10px;
+font-weight:800;
+cursor:pointer;
+border:none;
+margin:5px;
+}
+
+.neon{background:linear-gradient(90deg,#ff00ff,#00ffff)}
+.gold{background:gold}
+.green{background:#25d366}
+.red{background:#ff3b3b;color:#fff}
+
+.cart{
+position:fixed;
+right:10px;
+top:10px;
+background:#111;
+padding:10px;
+border-radius:10px;
+border:1px solid #333;
+width:220px;
+}
+
+input,select{
+width:100%;
+padding:8px;
+border-radius:8px;
+border:none;
+background:#111;
+color:#fff;
+text-align:center;
+margin-top:5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg"></div>
+
+<div class="cart">
+🛒 CARRINHO<br>
+Total: R$ <span id="total">0</span>
+
+<br><br>
+👤 Vendedor:
+<select id="seller">
+<option value="anjo">7AnjoX</option>
+<option value="biel">7BielX</option>
+</select>
+
+<button class="btn neon" onclick="finalizar()">Finalizar Compra</button>
+</div>
+
+<div class="container">
+
+<h1 class="title">NIVORA RP STORE</h1>
+
+<!-- CASH -->
+<div class="box">
+<h3>💵 CASH (1000 = R$1)</h3>
+
+<button class="btn red"
+onmousedown="hold(()=>{cashQty--;update()})"
+ontouchstart="hold(()=>{cashQty--;update()})"
+>-</button>
+
+<input id="cashQty" value="1000" readonly>
+
+<button class="btn green"
+onmousedown="hold(()=>{cashQty++;update()})"
+ontouchstart="hold(()=>{cashQty++;update()})"
+>+</button>
+
+<button class="btn neon" onclick="addCash()">Adicionar CASH</button>
+</div>
+
+<!-- COINS -->
+<div class="box">
+<h3>🪙 COINS (1 = R$10)</h3>
+
+<button class="btn red"
+onmousedown="hold(()=>{coinQty--;update()})"
+ontouchstart="hold(()=>{coinQty--;update()})"
+>-</button>
+
+<input id="coinQty" value="1" readonly>
+
+<button class="btn green"
+onmousedown="hold(()=>{coinQty++;update()})"
+ontouchstart="hold(()=>{coinQty++;update()})"
+>+</button>
+
+<button class="btn neon" onclick="addCoins()">Adicionar COINS</button>
+</div>
+
+</div>
+
+<script>
+
+let cart=[];
+let total=0;
+
+let cashQty=1000;
+let coinQty=1;
+
+// HOLD BUTTON
+let interval;
+function hold(action){
+action();
+clearInterval(interval);
+interval=setInterval(action,120);
+document.onmouseup=()=>clearInterval(interval);
+document.ontouchend=()=>clearInterval(interval);
+}
+
+// CASH
+function addCash(){
+let price = (cashQty/1000)*1;
+cart.push(`CASH: ${cashQty} (R$${price.toFixed(2)})`);
+total+=price;
+updateTotal();
+}
+
+// COINS
+function addCoins(){
+let price = coinQty*10;
+cart.push(`COINS: ${coinQty} (R$${price})`);
+total+=price;
+updateTotal();
+}
+
+// UPDATE INPUT
+function update(){
+document.getElementById("cashQty").value=cashQty;
+document.getElementById("coinQty").value=coinQty;
+}
+
+// TOTAL
+function updateTotal(){
+document.getElementById("total").innerText=total.toFixed(2);
+}
+
+// FINALIZAR
+function finalizar(){
+
+if(cart.length===0)return;
+
+let seller=document.getElementById("seller").value;
+
+let msg="🛒 COMPRA NIVORA RP%0A%0A";
+
+cart.forEach(i=>{
+msg+=i+"%0A";
+});
+
+msg+=`%0A💰 TOTAL: R$${total.toFixed(2)}`;
+msg+=`%0A👤 VENDEDOR: ${seller}`;
+
+let link = seller==="biel"
+? "https://wa.me/5534991116468?text="
+: "https://wa.me/5544991148268?text=";
+
+window.open(link+encodeURIComponent(msg),"blank");
+
+cart=[];
+total=0;
+updateTotal();
+}
+
+update();
+
+</script>
+
+</body>
+</html>
